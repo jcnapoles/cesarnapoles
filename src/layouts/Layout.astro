@@ -1,39 +1,94 @@
---- 
-interface Props {
+---
+import '@fontsource/montserrat/400.css'
+import '@fontsource/montserrat/400-italic.css'
+import '@fontsource/montserrat/600.css'
+import '@fontsource/montserrat/600-italic.css'
+import '@fontsource/montserrat/800.css'
+import '@fontsource/montserrat/800-italic.css'
+import '@fontsource/montserrat/900-italic.css'
+
+import Navigation from '@components/Navigation.astro'
+import Background from '@components/sections/Background.astro'
+
+export interface Props {
+	ticketUserName: string;
 	title: string;
 }
 
-const { title } = Astro.props;
+const { title, ticketUserName } = Astro.props
+
+const ogImage = ticketUserName
+	? `https://www.midufest.com/api/ticket?username=${ticketUserName}`
+	: 'https://www.midufest.com/og.jpg'
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description">
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width' />
+		<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+		<meta name='description' content='Conferencia de Programación y Desarrollo en Twitch' />
+		<meta name='keywords' content='programacion, desarrollo, javascript, typescript, conferencia, midudev' />
+		<meta name='author' content='Miguel Ángel Durán' />
+		<meta name='twitter:card' content='summary_large_image' />
+		<meta name='twitter:site' content='@midudev' />
+		<meta name='twitter:creator' content='@midudev' />
+		<meta name='twitter:title' content='MiduFest: Conferencia de Programación y Desarrollo' />
+		<meta name='twitter:description' content='Conferencia de Programación y Desarrollo en Twitch' />
+		<meta name='twitter:image' content={ogImage} />
+		<meta name='og:image' content={ogImage} />
+		<meta name='og:title' content='MiduFest: Conferencia de Programación y Desarrollo' />
+		<meta name='og:description' content='Conferencia de Programación y Desarrollo en Twitch' />
+		<meta name='og:url' content='https://midufest.com' />
+		<meta name='og:site_name' content='MiduFest' />
+		<meta name='og:type' content='website' />
+		<meta name='og:locale' content='es_ES' />
+		<meta name='robots' content='index, follow' />
+		<meta name='googlebot' content='index, follow' />
 		<title>{title}</title>
 	</head>
 	<body>
-		<slot />
+		<wc-toast></wc-toast>
+		<Background />
+
+		<div class='flex flex-col xl:flex-row justify-between m-auto xl:gap-x-24 xl:w-[1200px] mt-10 xl:mt-0'>
+			<div class='w-full xl:w-52'>
+				<Navigation />
+			</div>
+
+			<main class='flex-1 relative px-6'>
+				<slot />
+			</main>
+		</div>
 	</body>
 </html>
-<style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(45deg, rgb(var(--accent)), rgb(var(--accent-light)) 30%, white 60%);
-	}
+
+<style>
 	html {
-		font-family: system-ui, sans-serif;
-		background: #13151A;
-		background-size: 224px;
-	}
-	code {
-		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-			Bitstream Vera Sans Mono, Courier New, monospace;
+    font-family: "Montserrat", system-ui, sans-serif;
+		scroll-behavior: smooth;
+  }
+
+	body {
+		background: #000;
 	}
 </style>
+
+<script>
+	// detect if url has query string ticket
+	const urlParams = new URLSearchParams(window.location.search)
+	const ticket = urlParams.get('ticket')
+	const sessionTicket = sessionStorage.getItem('ticket')
+
+	const scroll = window.location.search.includes('?ticket')
+
+	setTimeout(() => {
+		// scroll to ticket hash
+		if (scroll || ticket || sessionTicket) {
+			sessionStorage.removeItem('ticket')
+			window.location.hash = '#ticket'
+			document.getElementById('ticket')?.scrollIntoView({ behavior: 'auto' })
+		}
+	}, 500)
+</script>
